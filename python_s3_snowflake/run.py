@@ -6,7 +6,7 @@ import boto3
 import json
 from dotenv import load_dotenv
 import logging
-from datetime import date
+from datetime import date, datetime
 
 # Enable more error logging
 # logging.basicConfig(level=logging.DEBUG)
@@ -15,6 +15,7 @@ from datetime import date
 load_dotenv()
 
 current_date = date.today()
+current_time = datetime.now()
 
 CURRENT_DIR = os.getcwd()
 CSV_FILENAME = os.getenv('CSV_FILENAME')
@@ -40,7 +41,7 @@ s3_client = my_session.client('s3')
 
 api_requests_dictionary = {
     'distributor': {
-        'filename': 'distributor-0-10000.json',
+        'filename': f'distributor-0-10000_{current_time}.json',
         'params': {
             'keyword': 'all',
             'skip': 0,
@@ -54,7 +55,7 @@ api_requests_dictionary = {
 
     # NOTE: Have to break up request because api request limit is 10000
     'manufacturer_1': {
-        'filename': 'manufacturer-0-10000.json',
+        'filename': f'manufacturer-0-10000_{current_time}.json',
         'params': {
             'keyword': 'all',
             'skip': 0,
@@ -66,7 +67,7 @@ api_requests_dictionary = {
         }
     },
     'manufacturer_2': {
-        'filename': 'manufacturer-10000-20000.json',
+        'filename': f'manufacturer-10000-20000_{current_time}.json',
         'params': {
             'keyword': 'all',
             'skip': 10000,
@@ -79,7 +80,7 @@ api_requests_dictionary = {
     },
 
     'lab': {
-        'filename': 'lab-0-10000.json',
+        'filename': f'lab-0-10000_{current_time}.json',
         'params': {
             'keyword': 'all',
             'skip': 0,
@@ -109,16 +110,17 @@ def request_save_upload():
         df = pd.DataFrame(normalized_json)
 
         # save to csv
-        # df.to_csv(os.path.join(CURRENT_DIR,rf'{value["filename"]}'), index=False)
+        # df.to_csv(os.path.join(CURRENT_DIR,rf'output/{value["filename"]}'), index=False)
+
+        FULL_FILE_PATH = rf'output/{value["filename"]}'
 
         # save to json
-        df.to_json(os.path.join(CURRENT_DIR,rf'{value["filename"]}'), orient="records", lines=True)
+        df.to_json(os.path.join(CURRENT_DIR,FULL_FILE_PATH), orient="records", lines=True)
 
         # Create bucket
         s3_client.create_bucket(Bucket=BUCKET_NAME)
 
         # Upload file into s3
-        s3_client.upload_file(f'./{value["filename"]}', BUCKET_NAME, f'input/{current_date.year}/{current_date.month}/{current_date.day}/{value["filename"]}')
+        s3_client.upload_file(FULL_FILE_PATH, BUCKET_NAME, f'input/{current_date.year}/{current_date.month}/{current_date.day}/{value["filename"]}')
 
-# request_save_upload()
-print('running file')
+request_save_upload()
