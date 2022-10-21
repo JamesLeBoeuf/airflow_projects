@@ -66,3 +66,7 @@ chmod a+x run.sh
 # Make log directory
 echo "[PROCESS:] CREATE LOG DIRECTORY"
 mkdir -p log
+
+# Make output directory
+echo "[PROCESS:] CREATE OUTPUT DIRECTORY"
+mkdir -p output
