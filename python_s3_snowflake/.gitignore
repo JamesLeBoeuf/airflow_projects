@@ -10,6 +10,9 @@
 # Local History for Visual Studio Code
 .history/
 
+# Output
+output/
+
 # Common credential files
 **/credentials.json
 **/client_secrets.json
