@@ -51,6 +51,11 @@ The purpose of this project is to show how to use Airflow to take JSON data from
     - ```python3 -m venv airflow-venv```
     - ```source airflow-venv/bin/activate```
 
+5. Create project & dag folder
+    - ```mkdir project```
+    - ```mkdir project/dags```
+    - pwd should read ```/home/ubuntu/project```
+
 5. Install Airflow and Airflow dependencies
     - ```sudo apt install -y build-essential libssl-dev libffi-dev python3-dev libpq-dev```
     - ```pip3 install psycopg2```
@@ -167,3 +172,17 @@ aws ec2 create-vpc-endpoint \
     --service-name com.amazonaws.us-east-1.s3 \
     --route-table-ids rtb-<NUMBER-ABOVE-IN-STEP-6>
 ```
+
+#### Edit path of dags_folder in airflow.cfg
+1. ```nano /home/ubuntu/airflow/airflow.cfg```
+2. ```dags_folder = /home/ubuntu/project/dags```
+
+#### Add basic_dag.py file into DAG folder
+1. SSH into EC2
+2. Activate virtual airflow-venv environment
+3. Add basic_dag.py file into DAG folder
+    - ```cd /home/ubuntu/project/dags```
+5. Start or restart airflow webserver and scheduler
+6. Log into Airflow
+6. Check DAG
+7. Trigger DAG
