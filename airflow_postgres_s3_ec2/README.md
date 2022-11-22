@@ -23,47 +23,57 @@ The purpose of this project is to show how to use Airflow to take JSON data from
 
 ### Setup
 #### Setting up EC2 on AWS
-Requirements
-* Size: t2 medium
-* * Newer versions of Airflow are quite large and will choke out on t2 micro and t2 small.
-* Platform: Ubuntu
-* Security Group Settings: add port 8080
-* * This allows to access airflow's webserver
 
-Upgrade/update system & install pip & python
-* ```sudo apt update```
-* ```sudo apt upgrade -y```
-* Oftentimes when upgrading an instance, it's recommended to reboot the instance.
-* ```sudo apt install python3-pip -y```
-* ```sudo apt install python3.10-venv```
+1. Launch new ec2 instance
+    - OS Image / Platform: Ubuntu
+    - Instance Type: t2.medium
+        - Newer versions of Airflow are quite large and will choke out on t2 micro.
+    - Add new inbound rule to ec2 Security Group
+        - Custom TCP - Port 8080 - 0.0.0.0/0
+            - This allows to access Airflows webserver on the ec2 instance
 
-Create virtual environment before installing airflow and airflow dependencies
-* ```python3 -m venv airflow-venv```
-* ```source airflow-venv/bin/activate```
+2. SSH into instance
+    - Right click on instance, click on 'Connect'
+    - Click on SSH client tab
+    - Copy ssh command
+        - Example: ```ssh -i "your_pem_file.pem" ubuntu@ecX-X-XXX-XXX-XX.compute-1.amazonaws.com```
 
-Install airflow and airflow dependencies
-* ```sudo apt install -y build-essential libssl-dev libffi-dev python3-dev libpq-dev```
-* ```pip3 install psycopg2```
-* ```pip3 install apache-airflow```
-* ```pip3 install apache-airflow-providers-postgres[amazon]```
-* ```pip3 install apache-airflow-providers-amazon```
+3. Install dependencies on ec2 instance
+    - Update system
+        - ```sudo apt update```
+        - ```sudo apt upgrade -y```
+        - Reboot instance if needed
+    - Install python & pip
+        - ```sudo apt install python3-pip -y```
+        - ```sudo apt install python3.10-venv```
 
-Check if airflow was installed successfully by running
-* ```airflow```
-* If command not found, reboot instance & reconnect via ssh
+4. Create virtual environment before installing Airflow and Airflow dependencies
+    - ```python3 -m venv airflow-venv```
+    - ```source airflow-venv/bin/activate```
 
-Initialising Airflow
-* ```export AIRFLOW_HOME=~/airflow```
-* ```airflow db init```
-* ```
-    airflow users create \
-       --username admin \
-       --password admin \
-       --firstname firstname \
-       --lastname lastname \
-       --role Admin \
-       --email test@airflow.com
-    ```
+5. Install Airflow and Airflow dependencies
+    - ```sudo apt install -y build-essential libssl-dev libffi-dev python3-dev libpq-dev```
+    - ```pip3 install psycopg2```
+    - ```pip3 install apache-airflow```
+    - ```pip3 install apache-airflow-providers-postgres[amazon]```
+    - ```pip3 install apache-airflow-providers-amazon```
+
+6. Check if Airflow was installed successfully
+    - ```airflow```
+    - If command not found, reboot instance & reconnect via ssh
+
+7. Initialise Airflow
+    - ```export AIRFLOW_HOME=~/airflow```
+    - ```airflow db init```
+    - ```
+        airflow users create \
+           --username admin \
+           --password admin \
+           --firstname firstname \
+           --lastname lastname \
+           --role Admin \
+           --email test@airflow.com
+        ```
 
 #### Setting up RDS Postgres
 Requirements
