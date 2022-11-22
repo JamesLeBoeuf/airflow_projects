@@ -105,7 +105,7 @@ The purpose of this project is to show how to use Airflow to take JSON data from
 
 #### Connect RDS PostgreSQL to PGAdmin
 
-1. Register - Server
+1. PGAdmin: Register - Server
     - NAME: rds instance name
     - HOST NAME / ADDRESS: rds endpoint
     - PORT: 5432
@@ -121,4 +121,49 @@ The purpose of this project is to show how to use Airflow to take JSON data from
 1. Create bucket
     - Bucket name
 
-#### 
+#### Create AWS Roles & Policies so PostgreSQL & S3 can play nicely together
+
+1. SSH into EC2 instance
+
+3. Create Role
+```
+    aws iam create-role \
+        --role-name postgrestS3Role \
+        --assume-role-policy-document '{"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Principal": {"Service": "rds.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
+```
+
+3. Create Policy
+```
+    aws iam create-policy \
+        --policy-name postgresS3Policy \
+        --policy-document '{"Version": "2012-10-17", "Statement": [{"Sid": "s3import", "Action": ["s3:GetObject", "s3:ListBucket"], "Effect": "Allow", "Resource": ["arn:aws:s3:::<YOUR-BUCKET-NAME-HERE>", "arn:aws:s3:::<YOUR-BUCKET-NAME-HERE>/*"]}]}'
+```
+
+4. Attach Role Policy
+```
+    aws iam attach-role-policy \
+        --policy-arn arn:aws:iam::<YOUR-ARN-AWS-IAM-NUMBER-HERE>:policy/postgresS3Policy \
+        --role-name postgrestS3Role
+```
+
+5. Add Role to RDS DB Instance
+```
+aws rds add-role-to-db-instance \
+    --db-instance-identifier <YOUR-RDS-DB-INSTANCE-NAME> \
+    --feature-name s3Import \
+    --role-arn arn:aws:iam::<YOUR-ARN-AWS-IAM-NUMBER-HERE>:role/postgrestS3Role \
+    --region <YOUR-REGION-HERE>
+```
+
+6. Describe route table
+```
+aws ec2 describe-route-tables | jq -r '.RouteTables[] | "\(.VpcId) \(.RouteTableId)"'
+```
+
+7. Create EC2 vpc endpoint
+```
+aws ec2 create-vpc-endpoint \
+    --vpc-id vpc-<NUMBER-ABOVE-IN-STEP-6> \
+    --service-name com.amazonaws.us-east-1.s3 \
+    --route-table-ids rtb-<NUMBER-ABOVE-IN-STEP-6>
+```
