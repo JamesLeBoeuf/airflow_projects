@@ -6,7 +6,9 @@ Dockerfile that will build python3.10 with Airflow latest (2.4.3). Also included
 2. Change any user credentials in entrypoint.sh file or leave as default
 3. Build docker image
   - ```docker build -t <IMAGE-NAME>:<TAG> -f Dockerfile . --no-cache```
-4. Visit http://0.0.0.0:8080 or http://localhost:8080 to test
+4. Run docker image
+  - ```docker run -p 8080:8080 <IMAGE-NAME>```
+5. Visit http://0.0.0.0:8080 or http://localhost:8080 to test
 
 ## Alternative Setup
 1. This image was pushed to Docker Hub so if you'd like to pull it visit:
