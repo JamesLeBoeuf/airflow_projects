@@ -54,6 +54,7 @@ The purpose of this project is to show how to use Airflow to take JSON data from
 5. Create project & dag folder
     - ```mkdir project```
     - ```mkdir project/dags```
+    - ```cd project```
     - pwd should read ```/home/ubuntu/project```
 
 5. Install Airflow and Airflow dependencies
